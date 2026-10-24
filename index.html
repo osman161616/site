@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kelepir Arabalar – Piyasadan ucuz ikinci el araçlar</title>
+<meta name="description" content="Piyasa ortalamasının altındaki ikinci el araç ilanlarını fiyat, yıl, KM ve hasar durumuna göre listeleyin.">
+<style>
+:root{
+  --bg:#f5f4f0; --card:#ffffff; --ink:#1d1d1b; --muted:#6b6a64; --line:#e4e2da;
+  --accent:#0f6b5c; --accent-soft:#dff0ec; --warn:#c25e00; --warn-soft:#fde6cc; --c-chg:#ff4d52; --c-paint:#3d8bff; --c-local:#ff9a3c; --part:#d8d8d8; --part-line:#b9b6aa; --sil:#f1f1f1;
+  --bad:#b3261e; --bad-soft:#fbe3e1; --info:#1e5fa8; --info-soft:#e0ecf9; --good:#1a7a3c; --good-soft:#dff3e5;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#161614; --card:#201f1d; --ink:#ecebe6; --muted:#9a988f; --line:#33322e;
+    --accent:#5cc4b0; --accent-soft:#1d3a34; --warn:#f5a04a; --warn-soft:#41290f; --c-chg:#f0645a; --c-paint:#5b9bf5; --c-local:#f5973a; --part:#4a4843; --part-line:#55524b; --sil:#2b2a27;
+    --bad:#f08a82; --bad-soft:#40201e; --info:#8bb9ec; --info-soft:#1b2d44; --good:#7fd69b; --good-soft:#1b3324; }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+header{padding:20px 24px 14px;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;max-width:1400px;margin:0 auto}
+h1{font-size:22px;margin:0;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:13px;margin-top:2px}
+button,select,input{font:inherit;color:inherit}
+.btn{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:9px 16px;cursor:pointer;font-weight:600}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.ghost:hover{background:var(--card)}
+main{max-width:1400px;margin:0 auto;padding:0 24px 60px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px}
+.stat b{display:block;font-size:22px;letter-spacing:-.01em}
+.stat span{color:var(--muted);font-size:12.5px}
+.filters{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:16px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px 12px;align-items:end}
+.filters label{display:block;font-size:12px;color:var(--muted);margin-bottom:3px}
+.filters input[type=text],.filters input[type=number],.filters select{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+.checks{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px 22px;padding-top:2px}
+.checks label{display:flex;align-items:center;gap:7px;color:var(--ink);font-size:14px;margin:0;cursor:pointer}
+.tablewrap{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:auto}
+table{border-collapse:collapse;width:100%;min-width:980px}
+th{position:sticky;top:0;background:var(--card);text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);padding:11px 12px;border-bottom:1px solid var(--line);cursor:pointer;white-space:nowrap;user-select:none}
+th.num,td.num{text-align:right}
+th .arr{opacity:.35;margin-left:4px}
+th.on{color:var(--ink)} th.on .arr{opacity:1;color:var(--accent)}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr.row{cursor:pointer}
+tr.row:hover td{background:color-mix(in srgb,var(--accent) 6%,transparent)}
+td.title{max-width:340px}
+td.title a{color:var(--ink);text-decoration:none;font-weight:600}
+td.title a:hover{color:var(--accent);text-decoration:underline}
+.car{font-weight:600}
+.car small{display:block;font-weight:400;color:var(--muted);font-size:12.5px}
+.price{font-weight:700;white-space:nowrap}
+.ucuz{display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.bar{width:54px;height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent)}
+.badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:12px;font-weight:600;margin-right:4px;white-space:nowrap}
+.b-ok{background:var(--good-soft);color:var(--good)}
+.b-warn{background:var(--warn-soft);color:var(--warn)}
+.b-bad{background:var(--bad-soft);color:var(--bad)}
+.b-info{background:var(--info-soft);color:var(--info)}
+.b-gray{background:var(--line);color:var(--muted)}
+tr.detail td{background:var(--bg);padding:14px 18px}
+.detail .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.detail h4{margin:0 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.detail .none{color:var(--muted);font-size:13px}
+.detail a.go{display:inline-block;margin-top:10px;color:var(--accent);font-weight:600}
+.range{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.range .btn{padding:7px 14px;font-weight:600}
+.range .btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.range .btn small{opacity:.75;font-weight:500;margin-left:4px}
+.carwrap{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start}
+.carsvg{width:280px;flex:none;height:auto;filter:drop-shadow(0 6px 10px rgba(0,0,0,.07))}
+.carsvg .sil{fill:var(--sil);stroke:var(--card);stroke-width:3;stroke-linejoin:round}
+.carsvg .win{fill:var(--card);pointer-events:none}
+.carsvg .mirror{fill:var(--card);pointer-events:none;opacity:0}
+.carsvg .wheel{fill:var(--sil);stroke:var(--card);stroke-width:4;pointer-events:none}
+.carsvg .p{fill:var(--part);stroke:var(--card);stroke-width:3;stroke-linejoin:round;transition:filter .15s}
+.carsvg .p:hover{filter:brightness(.93)}
+.carsvg .p.chg{fill:var(--c-chg)}
+.carsvg .p.paint{fill:var(--c-paint)}
+.carsvg .p.local{fill:var(--c-local)}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+@media (max-width:600px){
+  header,main,.foot{padding-left:14px;padding-right:14px}
+  .stats{grid-template-columns:1fr 1fr;gap:8px}.stat{padding:10px 12px}.stat b{font-size:17px}
+  .filters{grid-template-columns:1fr 1fr;padding:12px}
+  .filters > div:first-child{grid-column:1/-1}
+  .range .btn{padding:7px 10px;font-size:13px}
+}
+.foot{max-width:1400px;margin:0 auto;padding:0 24px 40px;color:var(--muted);font-size:12.5px}
+.empty{padding:50px 20px;text-align:center;color:var(--muted)}
+.empty h2{color:var(--ink);margin:0 0 8px;font-size:20px}
+.empty ol{display:inline-block;text-align:left;margin:12px 0 18px}
+.more{text-align:center;padding:14px}
+.dropzone{outline:3px dashed var(--accent);outline-offset:-10px}
+.note{color:var(--muted);font-size:12.5px;margin:10px 2px}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+#status{font-size:13px;color:var(--muted)}
+select#src{padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1 id="site-adi">Kelepir Arabalar</h1>
+    <div class="sub" id="status">Yükleniyor…</div>
+  </div>
+</header>
+<main>
+  <section class="stats" id="stats" hidden></section>
+  <section class="filters" id="filters" hidden>
+    <div><label>Ara (marka, model, il)</label><input type="text" id="f-q" placeholder="örn. passat, İstanbul"></div>
+    <div><label>Marka</label><select id="f-brand"></select></div>
+    <div><label>İl</label><select id="f-il"></select></div>
+    <div><label>Yıl (en az)</label><input type="number" id="f-yilmin" placeholder="2015"></div>
+    <div><label>Fiyat (en çok, TL)</label><input type="number" id="f-fmax" placeholder="1000000"></div>
+    <div><label>KM (en çok)</label><input type="number" id="f-kmmax" placeholder="150000"></div>
+    <div><label>% Ucuz (en az)</label><input type="number" id="f-umin" placeholder="15"></div>
+    <div><button class="btn ghost" id="f-reset" style="width:100%">Filtreleri temizle</button></div>
+    <div class="checks">
+      <label><input type="checkbox" id="c-agir"> Ağır hasarlı olmasın</label>
+      <label><input type="checkbox" id="c-deg"> Değişen parça olmasın</label>
+      <label><input type="checkbox" id="c-temiz"> Sadece tamamen temiz (boya/değişen yok)</label>
+    </div>
+  </section>
+  <div class="range" id="range" hidden>
+    <button class="btn ghost" data-r="all">Tümü<small></small></button>
+    <button class="btn ghost" data-r="today">Bugünün ilanları<small></small></button>
+    <button class="btn ghost" data-r="week">Bu haftanın ilanları<small></small></button>
+  </div>
+  <div class="tablewrap" id="tablewrap"></div>
+  <div class="note" id="note"></div>
+</main>
+<footer class="foot">Bu sitede ilan yayınlanmaz; her ilan, ilgili ilan sitesindeki sayfasına bağlanır. Listelenen fiyat ve bilgiler bilgilendirme amaçlıdır, satın almadan önce ilan sayfasından doğrulayın. Bu site, ilan sitelerinden herhangi biriyle bağlantılı değildir.</footer>
+
+<script>
+"use strict";
+/* ---------- küçük yardımcılar ---------- */
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const nf = new Intl.NumberFormat("tr-TR");
+const fmtTL = n => n == null ? "—" : nf.format(n) + " TL";
+const fmtDate = d => d ? d.toLocaleDateString("tr-TR") : "—";
+const trLower = s => String(s ?? "").toLocaleLowerCase("tr-TR");
+const cap = s => s.replace(/(^|[\s-])(\p{L})/gu, (m, a, b) => a + b.toLocaleUpperCase("tr-TR"));
+
+function prettyCar(markaRaw, modelRaw){
+  let brand = trLower(markaRaw), slug = trLower(modelRaw);
+  if (brand === "arazi" && slug.startsWith("suv-pickup-")) {
+    slug = slug.slice(11);
+    const i = slug.indexOf("-");
+    brand = i > 0 ? slug.slice(0, i) : slug;
+    slug = i > 0 ? slug.slice(i + 1) : "";
+  }
+  if (brand === "mercedes" && slug.startsWith("benz-")) slug = slug.slice(5);
+  let auto = false;
+  if (slug.endsWith("_otomatik")) { auto = true; slug = slug.slice(0, -9); }
+  const brandNice = brand === "volkswagen" ? "Volkswagen" : brand === "bmw" ? "BMW" : cap(brand);
+  return { brand: brandNice, model: cap(slug.replace(/-/g, " ")), auto };
+}
+/* ---------- Süzme + sıralama ---------- */
+function dayStart(d){ const x = new Date(d); x.setHours(0,0,0,0); return x; }
+function inRange(r, mode){
+  if (mode === "all") return true;
+  if (!r.tarih) return false;
+  const today = dayStart(new Date()), d = dayStart(r.tarih);
+  if (mode === "today") return +d === +today;
+  const monday = new Date(today); monday.setDate(today.getDate() - ((today.getDay() + 6) % 7));
+  return d >= monday && d <= today;
+}
+function filtered(rows){
+  const q = trLower($("f-q").value.trim());
+  const brand = $("f-brand").value, il = $("f-il").value;
+  const yilmin = num($("f-yilmin").value), fmax = num($("f-fmax").value), kmmax = num($("f-kmmax").value), umin = num($("f-umin").value);
+  const cA = $("c-agir").checked, cD = $("c-deg").checked, cT = $("c-temiz").checked;
+  return rows.filter(r => {
+    if (!inRange(r, state.range)) return false;
+    if (q && !trLower([r.brand, r.model, r.il, r.ilce].join(" ")).includes(q)) return false;
+    if (brand && r.brand !== brand) return false;
+    if (il && r.il !== il) return false;
+    if (yilmin != null && (r.yil == null || r.yil < yilmin)) return false;
+    if (fmax != null && (r.fiyat == null || r.fiyat > fmax)) return false;
+    if (kmmax != null && (r.km == null || r.km > kmmax)) return false;
+    if (umin != null && (r.ucuz == null || r.ucuz < umin)) return false;
+    if (cA && r.agir) return false;
+    if (cD && r.degisen.length) return false;
+    if (cT && (r.agir || r.degisen.length || r.boyali.length || r.lokal.length)) return false;
+    return true;
+  });
+}
+function sorted(rows){
+  const { key, dir } = state.sort;
+  const val = r => key === "arac" ? r.brand + " " + r.model : key === "konum" ? r.il + " " + r.ilce
+    : key === "hasar" ? r.degisen.length * 100 + r.boyali.length * 10 + r.lokal.length + (r.agir ? 1000 : 0)
+    : key === "tarih" ? (r.tarih ? +r.tarih : null) : r[key];
+  return rows.slice().sort((a, b) => {
+    const x = val(a), y = val(b);
+    if (x == null && y == null) return 0; if (x == null) return 1; if (y == null) return -1;
+    return (typeof x === "string" ? x.localeCompare(y, "tr") : x - y) * dir;
+  });
+}
+
+function fillSelect(sel, values, firstLabel){
+  const keep = sel.value;
+  sel.innerHTML = `<option value="">${firstLabel}</option>` + values.map(v => `<option>${esc(v)}</option>`).join("");
+  if (values.includes(keep)) sel.value = keep;
+}
+function statusBadges(r){
+  const b = [];
+  if (r.agir) b.push('<span class="badge b-bad">Ağır hasarlı</span>');
+  if (r.degisen.length) b.push(`<span class="badge b-bad">${r.degisen.length} değişen</span>`);
+  if (r.boyali.length) b.push(`<span class="badge b-info">${r.boyali.length} boyalı</span>`);
+  if (r.lokal.length) b.push(`<span class="badge b-warn">${r.lokal.length} lokal</span>`);
+  return b.length ? b.join("") : '<span class="badge b-ok">Temiz</span>';
+}
+function chips(list, cls){ return list.length ? list.map(p => `<span class="badge ${cls}">${esc(p)}</span>`).join(" ") : '<span class="none">Yok</span>'; }
+const SIDE = {  // sol taraf; sağ taraf aynalanır
+  "ön çamurluk":  "M70,101 Q70,94 77,94 H95 Q102,94 102,101 V176 H70 Z",
+  "ön kapı":      "M70,179 H104 Q108,179 110,184 L168,296 Q169,299 166,299 H70 Z",
+  "arka kapı":    "M70,302 H167 L165,350 Q158,366 128,386 H70 Z",
+  "arka çamurluk":"M70,390 H102 V456 Q102,464 94,464 H78 Q70,464 70,456 Z"
+};
+const SIDE_WIN = [ "M120,240 L158,296 H120 Z", "M124,308 H165 L163,350 Q150,364 124,374 Z" ];
+const SIDE_SIL = "M66,90 H110 Q116,90 119,97 L176,250 Q180,300 174,340 Q170,380 150,420 Q142,448 130,468 H66 Z";
+const CENTER_SIL = "M178,100 Q240,84 302,100 C312,170 316,240 306,300 C316,360 318,430 302,468 Q240,486 178,468 C162,430 164,360 174,300 C164,240 168,170 178,100 Z";
+const CENTER = {
+  "kaput": "M179,198 C176,150 177,122 188,110 Q240,94 292,110 C303,122 304,150 301,198 Q240,186 179,198 Z",
+  "tavan": "M198,298 Q198,296 200,296 H284 Q286,296 286,298 V364 Q286,366 284,366 H200 Q198,366 198,364 Z",
+  "bagaj kapağı": "M180,428 Q240,412 300,428 C303,440 298,452 291,458 Q240,472 189,458 C182,452 177,440 180,428 Z",
+  "ön tampon": "M180,58 H304 Q312,58 312,66 V80 Q312,88 304,88 H180 Q172,88 172,80 V66 Q172,58 180,58 Z",
+  "arka tampon": "M180,480 H304 Q312,480 312,488 V502 Q312,510 304,510 H180 Q172,510 172,502 V488 Q172,480 180,480 Z"
+};
+function carSvg(r){
+  const st = {};
+  r.boyali.forEach(p => st[trLower(p)] = "paint");
+  r.lokal.forEach(p => st[trLower(p)] = "local");
+  r.degisen.forEach(p => st[trLower(p)] = "chg");
+  const LBL = { chg: "Değişen", paint: "Boyalı", local: "Lokal boyalı" };
+  const part = (key, d) => `<path class="p ${st[key] || ""}" d="${d}"><title>${esc(cap(key))}${st[key] ? " – " + LBL[st[key]] : ""}</title></path>`;
+  const side = (prefix, mirror) => `<g ${mirror ? 'transform="translate(480,0) scale(-1,1)"' : ""}>` +
+    `<path class="sil" d="${SIDE_SIL}"/>` +
+    Object.entries(SIDE).map(([n, d]) => part(prefix + " " + n, d)).join("") +
+    SIDE_WIN.map(d => `<path class="win" d="${d}"/>`).join("") +
+    `<path class="mirror" d="M70,172 H102 L106,186 H70 Z"/>` +
+    `<circle class="wheel" cx="75" cy="160" r="29"/><circle class="wheel" cx="75" cy="385" r="29"/></g>`;
+  let s = `<svg class="carsvg" viewBox="40 24 400 520" role="img" aria-label="Araç hasar şeması">`;
+  // plakalık küçük çıkıntılar
+  s += `<rect class="sil" x="187" y="38" width="32" height="18" rx="7"/><rect class="sil" x="265" y="38" width="32" height="18" rx="7"/><rect class="sil" x="187" y="512" width="32" height="18" rx="7"/><rect class="sil" x="265" y="512" width="32" height="18" rx="7"/>`;
+  s += `<path class="sil" d="${CENTER_SIL}"/>`;
+  s += side("sol", false) + side("sağ", true);
+  // ön ve arka cam
+  s += `<path class="win" d="M184,206 Q240,194 296,206 L292,290 Q240,284 188,290 Z"/><path class="win" d="M188,372 Q240,366 292,372 L296,418 Q240,406 184,418 Z"/>`;
+  for (const [n, d] of Object.entries(CENTER)) s += part(n, d);
+  // farlar / lambalar
+  s += `<rect class="win" x="190" y="68" width="30" height="12" rx="6"/><rect class="win" x="264" y="68" width="30" height="12" rx="6"/><rect class="win" x="190" y="488" width="30" height="12" rx="6"/><rect class="win" x="264" y="488" width="30" height="12" rx="6"/>`;
+  return s + `</svg>`;
+}
+function detailHtml(r){
+  return `<div class="carwrap">
+    <div>${carSvg(r)}<div class="legend" style="flex-direction:column;gap:3px"><span><i style="background:var(--c-chg)"></i>Değişen</span><span><i style="background:var(--c-paint)"></i>Boyalı</span><span><i style="background:var(--c-local)"></i>Lokal boyalı</span><span><i style="background:var(--part)"></i>Orijinal</span></div></div>
+    <div style="flex:1;min-width:260px"><div class="grid">
+    <div><h4>Değişen parçalar</h4>${chips(r.degisen, "b-bad")}</div>
+    <div><h4>Boyalı parçalar</h4>${chips(r.boyali, "b-info")}</div>
+    <div><h4>Lokal boyalı parçalar</h4>${chips(r.lokal, "b-warn")}</div>
+    <div><h4>Piyasa</h4><div>Benzer ilanların ort. fiyatı: <b>${esc(r.ort || "—")}</b></div></div>
+  </div><a class="go" href="${esc(r.url)}" target="_blank" rel="noopener nofollow">İlana git →</a></div></div>`;
+}
+
+const SITE_ADI = "Kelepir Arabalar";
+const num = v => (v === null || v === undefined || v === "" || isNaN(Number(v))) ? null : Number(v);
+const state = { rows: [], range: "all", sort: { key: "ucuz", dir: -1 }, limit: 100, open: new Set(), updated: null };
+
+function toRow(x){
+  const car = prettyCar(x.marka, x.model);
+  let tarih = null;
+  if (x.tarih) { const m = String(x.tarih).match(/^(\d{4})-(\d{2})-(\d{2})/); if (m) tarih = new Date(+m[1], +m[2] - 1, +m[3]); }
+  return { fiyat: num(x.fiyat), yil: num(x.yil), km: num(x.km), brand: car.brand, model: car.model, auto: car.auto,
+    tarih, url: x.url || "", il: x.il || "", ilce: x.ilce || "", agir: !!x.agir,
+    boyali: x.boyali || [], degisen: x.degisen || [], lokal: x.lokal || [], ucuz: num(x.ucuz), ort: x.ort || "" };
+}
+async function loadData(){
+  try {
+    const res = await fetch("data.json?v=" + Date.now(), { cache: "no-store" });
+    if (!res.ok) throw new Error(res.status);
+    const d = await res.json();
+    state.rows = (d.ilanlar || []).map(toRow);
+    state.updated = d.guncelleme ? new Date(d.guncelleme) : null;
+    refreshAll();
+  } catch (e) {
+    if (!state.rows.length) { setStatus("Veriler yüklenemedi"); $("tablewrap").innerHTML = '<div class="empty"><h2>İlanlar şu an yüklenemiyor</h2>Lütfen biraz sonra tekrar deneyin.</div>'; }
+  }
+}
+function currentRows(){ return state.rows; }
+function setStatus(t){ $("status").textContent = t; }
+function updateStatus(){
+  const u = state.updated ? " · son güncelleme " + state.updated.toLocaleString("tr-TR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : "";
+  setStatus(state.rows.length + " ilan" + u);
+}
+function refreshAll(){
+  updateStatus();
+  $("filters").hidden = $("stats").hidden = !state.rows.length;
+  const all = state.rows;
+  fillSelect($("f-brand"), [...new Set(all.map(r => r.brand))].sort((a, b) => a.localeCompare(b, "tr")), "Hepsi");
+  fillSelect($("f-il"), [...new Set(all.map(r => r.il).filter(Boolean))].sort((a, b) => a.localeCompare(b, "tr")), "Hepsi");
+  render();
+}
+function render(){
+  const all = state.rows;
+  if (!all.length) { $("range").hidden = true; $("tablewrap").innerHTML = '<div class="empty"><h2>Henüz ilan yok</h2>Yakında burada olacak.</div>'; return; }
+  const rows = sorted(filtered(all));
+  $("range").hidden = false;
+  document.querySelectorAll("#range .btn").forEach(b => {
+    b.classList.toggle("active", b.dataset.r === state.range);
+    b.querySelector("small").textContent = all.filter(r => inRange(r, b.dataset.r)).length;
+  });
+  const prices = rows.map(r => r.fiyat).filter(v => v != null);
+  const avg = prices.length ? prices.reduce((a, b) => a + b, 0) / prices.length : null;
+  const best = rows.reduce((m, r) => r.ucuz != null && (m == null || r.ucuz > m) ? r.ucuz : m, null);
+  const cheapest = prices.length ? Math.min(...prices) : null;
+  $("stats").innerHTML = [
+    [rows.length + " / " + all.length, "gösterilen ilan"],
+    [fmtTL(avg && Math.round(avg)), "ortalama fiyat"],
+    [fmtTL(cheapest), "en düşük fiyat"],
+    [best != null ? "%" + best : "—", "en yüksek “% ucuz”"]
+  ].map(([b, s]) => `<div class="stat"><b>${esc(b)}</b><span>${s}</span></div>`).join("");
+  const cols = [["arac","İlan"],["yil","Yıl","num"],["km","KM","num"],["fiyat","Fiyat","num"],["ucuz","% Ucuz","num"],["konum","Konum"],["tarih","Tarih"],["hasar","Durum"]];
+  let h = "<table><thead><tr>" + cols.map(([k, t, c]) =>
+    `<th data-k="${k}" class="${c || ""} ${state.sort.key === k ? "on" : ""}">${t}<span class="arr">${state.sort.key === k ? (state.sort.dir > 0 ? "▲" : "▼") : "↕"}</span></th>`).join("") + "</tr></thead><tbody>";
+  const shown = rows.slice(0, state.limit);
+  shown.forEach((r, i) => {
+    const key = r.url || i;
+    h += `<tr class="row" data-key="${esc(key)}">
+      <td class="title"><a href="${esc(r.url)}" target="_blank" rel="noopener nofollow" onclick="event.stopPropagation()">${esc(r.brand)} ${esc(r.model)}</a>${r.auto ? ' <span class="badge b-gray">Otomatik</span>' : ""}</td>
+      <td class="num">${r.yil ?? "—"}</td>
+      <td class="num">${r.km != null ? nf.format(r.km) : "—"}</td>
+      <td class="num price">${fmtTL(r.fiyat)}</td>
+      <td class="num">${r.ucuz != null ? `<span class="ucuz">%${r.ucuz}<span class="bar"><i style="width:${Math.max(0, Math.min(100, r.ucuz * 3))}%"></i></span></span>` : "—"}</td>
+      <td>${esc(r.il)}${r.ilce ? `<small style="color:var(--muted)"> / ${esc(r.ilce)}</small>` : ""}</td>
+      <td>${fmtDate(r.tarih)}</td>
+      <td>${statusBadges(r)}</td></tr>`;
+    if (state.open.has(key)) h += `<tr class="detail"><td colspan="8">${detailHtml(r)}</td></tr>`;
+  });
+  h += "</tbody></table>";
+  if (!shown.length) h = `<div class="empty"><h2>Sonuç yok</h2>${state.range !== "all" ? "Bu zaman aralığında ilan yok. En yeni ilan tarihi: " + fmtDate(all.reduce((m, r) => r.tarih && (!m || r.tarih > m) ? r.tarih : m, null)) + "." : "Filtrelere uyan ilan bulunamadı."}</div>`;
+  if (rows.length > shown.length) h += `<div class="more"><button class="btn ghost" id="more">Daha fazla göster (${rows.length - shown.length} ilan daha)</button></div>`;
+  $("tablewrap").innerHTML = h;
+  $("note").textContent = "İlanlar varsayılan olarak en ucuzdan (% Ucuz en yüksek) sıralıdır. Bir satıra tıklarsanız araç üzerinde hasar şeması açılır; ilan adına tıklarsanız ilan sayfasına gidersiniz.";
+}
+$("range").onclick = e => { const b = e.target.closest(".btn"); if (b) { state.range = b.dataset.r; state.limit = 100; render(); } };
+["f-q","f-yilmin","f-fmax","f-kmmax","f-umin"].forEach(id => $(id).oninput = () => { state.limit = 100; render(); });
+["f-brand","f-il","c-agir","c-deg","c-temiz"].forEach(id => $(id).onchange = () => { state.limit = 100; render(); });
+$("f-reset").onclick = () => {
+  ["f-q","f-yilmin","f-fmax","f-kmmax","f-umin","f-brand","f-il"].forEach(id => $(id).value = "");
+  ["c-agir","c-deg","c-temiz"].forEach(id => $(id).checked = false); render();
+};
+$("tablewrap").addEventListener("click", e => {
+  const th = e.target.closest("th");
+  if (th) { const k = th.dataset.k; state.sort = { key: k, dir: state.sort.key === k ? -state.sort.dir : (["arac","konum"].includes(k) ? 1 : -1) }; render(); return; }
+  if (e.target.id === "more") { state.limit += 200; render(); return; }
+  const tr = e.target.closest("tr.row");
+  if (tr) { const k = tr.dataset.key; state.open.has(k) ? state.open.delete(k) : state.open.add(k); render(); }
+});
+document.title = SITE_ADI + " – Piyasadan ucuz ikinci el araçlar";
+$("site-adi").textContent = SITE_ADI;
+loadData();
+setInterval(loadData, 5 * 60 * 1000);
+
+</script>
+</body>
+</html>
