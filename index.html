@@ -82,6 +82,25 @@ tr.detail td{background:var(--bg);padding:14px 18px}
 .carsvg .p.local{fill:var(--c-local)}
 .legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:6px}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.hero{display:flex;align-items:center;gap:20px;background:linear-gradient(135deg,#06201a,#0b2b23);border:1px solid #14473a;border-radius:16px;padding:16px 22px;margin-bottom:16px;color:#e8f5ee;overflow:hidden}
+.radar{position:relative;width:92px;height:92px;flex:none;border-radius:50%;background:#031510;border:5px solid #2f9360;overflow:hidden;box-shadow:0 0 0 1px #0d3b2c,0 0 24px rgba(61,190,110,.25)}
+.radar .grid{position:absolute;inset:0;background:
+  repeating-linear-gradient(0deg,rgba(61,190,110,.16) 0 1px,transparent 1px 14px),
+  repeating-linear-gradient(90deg,rgba(61,190,110,.16) 0 1px,transparent 1px 14px)}
+.radar .ring{position:absolute;border-radius:50%;border:1px solid rgba(61,190,110,.28);inset:22%}
+.radar .ring.r2{inset:0%;border-color:rgba(61,190,110,.15)}
+.radar .sweep{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,transparent 0deg,transparent 250deg,rgba(61,200,115,.55) 360deg);animation:sweep 4s linear infinite}
+.radar i{position:absolute;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:#52e08e;box-shadow:0 0 8px #52e08e;opacity:.15;animation:blip 4s linear infinite}
+@keyframes sweep{to{transform:rotate(360deg)}}
+@keyframes blip{0%{opacity:1;transform:scale(1.5)}12%{opacity:1;transform:scale(1)}65%,100%{opacity:.12;transform:scale(.8)}}
+.hero h2{margin:0;font-size:20px;letter-spacing:-.01em}
+.hero h2 .dots::after{content:"";animation:dots 1.6s steps(1) infinite}
+@keyframes dots{0%{content:""}25%{content:"."}50%{content:".."}75%,100%{content:"..."}}
+.hero p{margin:4px 0 0;font-size:13.5px;color:#9fcdb4;display:flex;align-items:flex-start;gap:8px}
+.live{display:inline-block;flex:none;margin-top:6px;width:8px;height:8px;border-radius:50%;background:#52e08e;box-shadow:0 0 0 0 rgba(82,224,142,.6);animation:pulse 2s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 8px rgba(82,224,142,0)}100%{box-shadow:0 0 0 0 rgba(82,224,142,0)}}
+@media (prefers-reduced-motion:reduce){.radar .sweep,.radar i,.live,.hero h2 .dots::after{animation:none}.hero h2 .dots::after{content:"..."}.radar i{opacity:.8}}
+@media (max-width:600px){.hero{padding:14px;gap:14px}.radar{width:70px;height:70px;border-width:4px}.hero h2{font-size:17px}}
 @media (max-width:600px){
   header,main,.foot{padding-left:14px;padding-right:14px}
   .stats{grid-template-columns:1fr 1fr;gap:8px}.stat{padding:10px 12px}.stat b{font-size:17px}
@@ -109,6 +128,13 @@ select#src{padding:8px 10px;border:1px solid var(--line);border-radius:8px;backg
   </div>
 </header>
 <main>
+<section class="hero" aria-live="polite">
+  <div class="radar" aria-hidden="true"><div class="grid"></div><div class="ring"></div><div class="ring r2"></div><div class="sweep"></div><i style="left:64.8%;top:47.4%;animation-delay:0.89s"></i><i style="left:67.7%;top:28.9%;animation-delay:0.44s"></i><i style="left:76.8%;top:72.5%;animation-delay:1.44s"></i><i style="left:38.0%;top:67.2%;animation-delay:2.39s"></i><i style="left:16.2%;top:30.5%;animation-delay:3.33s"></i><i style="left:47.3%;top:80.9%;animation-delay:2.06s"></i></div>
+  <div>
+    <h2>Kelepir ilanlar aranıyor<span class="dots"></span></h2>
+    <p><span class="live"></span><span id="hero-sub">Taranıyor…</span></p>
+  </div>
+</section>
   <section class="stats" id="stats" hidden></section>
   <section class="filters" id="filters" hidden>
     <div><label>Ara (marka, model, il)</label><input type="text" id="f-q" placeholder="örn. passat, İstanbul"></div>
@@ -297,6 +323,7 @@ function setStatus(t){ $("status").textContent = t; }
 function updateStatus(){
   const u = state.updated ? " · son güncelleme " + state.updated.toLocaleString("tr-TR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : "";
   setStatus(state.rows.length + " ilan" + u);
+  const hs = $("hero-sub"); if (hs) hs.textContent = "Canlı · " + state.rows.length + " ilan taranıyor" + u;
 }
 function refreshAll(){
   updateStatus();
