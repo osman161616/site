@@ -323,7 +323,7 @@ function setStatus(t){ $("status").textContent = t; }
 function updateStatus(){
   const u = state.updated ? " · son güncelleme " + state.updated.toLocaleString("tr-TR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : "";
   setStatus(state.rows.length + " ilan" + u);
-  const hs = $("hero-sub"); if (hs) hs.textContent = "Canlı · " + state.rows.length + " ilan taranıyor" + u;
+  const hs = $("hero-sub"); if (hs) hs.textContent = "Canlı · Binlerce ilan taranıyor" + u;
 }
 function refreshAll(){
   updateStatus();
