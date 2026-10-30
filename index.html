@@ -101,6 +101,41 @@ tr.detail td{background:var(--bg);padding:14px 18px}
 @keyframes pulse{70%{box-shadow:0 0 0 8px rgba(82,224,142,0)}100%{box-shadow:0 0 0 0 rgba(82,224,142,0)}}
 @media (prefers-reduced-motion:reduce){.radar .sweep,.radar i,.live,.hero h2 .dots::after{animation:none}.hero h2 .dots::after{content:"..."}.radar i{opacity:.8}}
 @media (max-width:600px){.hero{padding:14px;gap:14px}.radar{width:70px;height:70px;border-width:4px}.hero h2{font-size:17px}}
+.mbar{display:none}
+.cards{display:none}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 14px 10px;margin-bottom:10px;cursor:pointer}
+.c-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.c-name{font-weight:700;font-size:15.5px;line-height:1.3;min-width:0}
+.c-name a{color:var(--ink);text-decoration:none}
+.c-name a:hover{color:var(--accent);text-decoration:underline}
+.c-price{font-weight:800;font-size:17px;white-space:nowrap;letter-spacing:-.01em}
+.c-specs{display:flex;flex-wrap:wrap;gap:4px 0;margin:8px 0 10px;color:var(--muted);font-size:13px}
+.c-specs span+span::before{content:"·";margin:0 7px;opacity:.6}
+.c-bottom{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.c-ucuz .ucuz{font-weight:700;color:var(--accent)}
+.c-badges{display:flex;flex-wrap:wrap;gap:4px 0;justify-content:flex-end}
+.c-more{margin-top:10px;padding-top:8px;border-top:1px dashed var(--line);font-size:12.5px;color:var(--muted);text-align:center}
+.c-detail{margin-top:8px;padding-top:10px;border-top:1px solid var(--line);cursor:default}
+.c-detail .carwrap{justify-content:center}
+.c-detail h4{margin:0 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.c-detail .grid{display:grid;grid-template-columns:1fr;gap:12px}
+.c-detail .none{color:var(--muted);font-size:13px}
+.c-detail a.go{display:inline-block;margin-top:10px;color:var(--accent);font-weight:600}
+.c-detail .legend{justify-content:center}
+.c-detail .carsvg{width:min(250px,70vw)}
+#filters[hidden]{display:none!important}
+@media (max-width:700px){
+  .tbl{display:none}
+  .cards{display:block}
+  .tablewrap{background:none;border:0;overflow:visible;border-radius:0}
+  .mbar:not([hidden]){display:flex;gap:8px;margin-bottom:10px}
+  .mbar .btn{flex:none;padding:9px 14px}
+  .mbar select{flex:1;min-width:0;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+  #filters:not(.open){display:none}
+  .range{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}
+  .range .btn{flex:none;white-space:nowrap}
+  .more{padding:6px 0 14px}
+}
 @media (max-width:600px){
   header,main,.foot{padding-left:14px;padding-right:14px}
   .stats{grid-template-columns:1fr 1fr;gap:8px}.stat{padding:10px 12px}.stat b{font-size:17px}
@@ -151,6 +186,17 @@ select#src{padding:8px 10px;border:1px solid var(--line);border-radius:8px;backg
       <label><input type="checkbox" id="c-temiz"> Sadece tamamen temiz (boya/değişen yok)</label>
     </div>
   </section>
+  <div class="mbar" id="mbar" hidden>
+    <button class="btn ghost" id="ftoggle" type="button">Filtrele</button>
+    <select id="msort" aria-label="Sırala">
+      <option value="ucuz:-1">Sırala: En ucuz (% Ucuz)</option>
+      <option value="fiyat:1">Fiyat: Düşükten yükseğe</option>
+      <option value="fiyat:-1">Fiyat: Yüksekten düşüğe</option>
+      <option value="yil:-1">Yıl: Yeniden eskiye</option>
+      <option value="km:1">KM: Azdan çoğa</option>
+      <option value="tarih:-1">Tarih: En yeni</option>
+    </select>
+  </div>
   <div class="range" id="range" hidden>
     <button class="btn ghost" data-r="all">Tümü<small></small></button>
     <button class="btn ghost" data-r="today">Bugünün ilanları<small></small></button>
@@ -355,25 +401,42 @@ function render(){
   const cols = [["arac","İlan"],["yil","Yıl","num"],["km","KM","num"],["fiyat","Fiyat","num"],["ucuz","% Ucuz","num"],["konum","Konum"],["tarih","Tarih"],["hasar","Durum"]];
   let h = "<table><thead><tr>" + cols.map(([k, t, c]) =>
     `<th data-k="${k}" class="${c || ""} ${state.sort.key === k ? "on" : ""}">${t}<span class="arr">${state.sort.key === k ? (state.sort.dir > 0 ? "▲" : "▼") : "↕"}</span></th>`).join("") + "</tr></thead><tbody>";
+  let cards = "";
   const shown = rows.slice(0, state.limit);
   shown.forEach((r, i) => {
     const key = r.url || i;
+    const open = state.open.has(key);
+    const ucuzHtml = r.ucuz != null ? `<span class="ucuz">%${r.ucuz}<span class="bar"><i style="width:${Math.max(0, Math.min(100, r.ucuz * 3))}%"></i></span></span>` : "—";
     h += `<tr class="row" data-key="${esc(key)}">
       <td class="title"><a href="${esc(r.url)}" target="_blank" rel="noopener nofollow" onclick="event.stopPropagation()">${esc(r.brand)} ${esc(r.model)}</a>${r.auto ? ' <span class="badge b-gray">Otomatik</span>' : ""}</td>
       <td class="num">${r.yil ?? "—"}</td>
       <td class="num">${r.km != null ? nf.format(r.km) : "—"}</td>
       <td class="num price">${fmtTL(r.fiyat)}</td>
-      <td class="num">${r.ucuz != null ? `<span class="ucuz">%${r.ucuz}<span class="bar"><i style="width:${Math.max(0, Math.min(100, r.ucuz * 3))}%"></i></span></span>` : "—"}</td>
+      <td class="num">${ucuzHtml}</td>
       <td>${esc(r.il)}${r.ilce ? `<small style="color:var(--muted)"> / ${esc(r.ilce)}</small>` : ""}</td>
       <td>${fmtDate(r.tarih)}</td>
       <td>${statusBadges(r)}</td></tr>`;
-    if (state.open.has(key)) h += `<tr class="detail"><td colspan="8">${detailHtml(r)}</td></tr>`;
+    if (open) h += `<tr class="detail"><td colspan="8">${detailHtml(r)}</td></tr>`;
+    cards += `<article class="card" data-key="${esc(key)}">
+      <div class="c-top">
+        <div class="c-name"><a href="${esc(r.url)}" target="_blank" rel="noopener nofollow">${esc(r.brand)} ${esc(r.model)}</a>${r.auto ? ' <span class="badge b-gray">Otomatik</span>' : ""}</div>
+        <div class="c-price">${fmtTL(r.fiyat)}</div>
+      </div>
+      <div class="c-specs"><span>${r.yil ?? "—"}</span><span>${r.km != null ? nf.format(r.km) + " km" : "—"}</span><span>${esc(r.il)}${r.ilce ? " / " + esc(r.ilce) : ""}</span><span>${fmtDate(r.tarih)}</span></div>
+      <div class="c-bottom"><div class="c-ucuz">${ucuzHtml}</div><div class="c-badges">${statusBadges(r)}</div></div>
+      <div class="c-more">${open ? "Hasar şemasını gizle ▴" : "Hasar şemasını göster ▾"}</div>
+      ${open ? `<div class="c-detail">${detailHtml(r)}</div>` : ""}
+    </article>`;
   });
   h += "</tbody></table>";
+  h = `<div class="tbl">${h}</div><div class="cards">${cards}</div>`;
   if (!shown.length) h = `<div class="empty"><h2>Sonuç yok</h2>${state.range !== "all" ? "Bu zaman aralığında ilan yok. En yeni ilan tarihi: " + fmtDate(all.reduce((m, r) => r.tarih && (!m || r.tarih > m) ? r.tarih : m, null)) + "." : "Filtrelere uyan ilan bulunamadı."}</div>`;
   if (rows.length > shown.length) h += `<div class="more"><button class="btn ghost" id="more">Daha fazla göster (${rows.length - shown.length} ilan daha)</button></div>`;
+  $("mbar").hidden = false;
+  const sv = state.sort.key + ":" + state.sort.dir;
+  if ([...$("msort").options].some(o => o.value === sv)) $("msort").value = sv;
   $("tablewrap").innerHTML = h;
-  $("note").textContent = "İlanlar varsayılan olarak en ucuzdan (% Ucuz en yüksek) sıralıdır. Bir satıra tıklarsanız araç üzerinde hasar şeması açılır; ilan adına tıklarsanız ilan sayfasına gidersiniz.";
+  $("note").textContent = "İlanlar varsayılan olarak en ucuzdan (% Ucuz en yüksek) sıralıdır. Bir ilana tıklarsanız araç üzerinde hasar şeması açılır; ilan adına tıklarsanız ilan sayfasına gidersiniz.";
 }
 $("range").onclick = e => { const b = e.target.closest(".btn"); if (b) { state.range = b.dataset.r; state.limit = 100; render(); } };
 ["f-q","f-yilmin","f-fmax","f-kmmax","f-umin"].forEach(id => $(id).oninput = () => { state.limit = 100; render(); });
@@ -386,9 +449,14 @@ $("tablewrap").addEventListener("click", e => {
   const th = e.target.closest("th");
   if (th) { const k = th.dataset.k; state.sort = { key: k, dir: state.sort.key === k ? -state.sort.dir : (["arac","konum"].includes(k) ? 1 : -1) }; render(); return; }
   if (e.target.id === "more") { state.limit += 200; render(); return; }
+  if (e.target.closest("a")) return;
+  const card = e.target.closest(".card");
+  if (card) { const k = card.dataset.key; state.open.has(k) ? state.open.delete(k) : state.open.add(k); render(); return; }
   const tr = e.target.closest("tr.row");
   if (tr) { const k = tr.dataset.key; state.open.has(k) ? state.open.delete(k) : state.open.add(k); render(); }
 });
+$("msort").onchange = e => { const [k, d] = e.target.value.split(":"); state.sort = { key: k, dir: +d }; state.limit = 100; render(); };
+$("ftoggle").onclick = () => { const f = $("filters"); const o = f.classList.toggle("open"); $("ftoggle").textContent = o ? "Filtreleri gizle" : "Filtrele"; };
 document.title = SITE_ADI + " – Piyasadan ucuz ikinci el araçlar";
 $("site-adi").textContent = SITE_ADI;
 loadData();
