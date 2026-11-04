@@ -4,7 +4,34 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kelepir Arabalar – Piyasadan ucuz ikinci el araçlar</title>
-<meta name="description" content="Piyasa ortalamasının altındaki ikinci el araç ilanlarını fiyat, yıl, KM ve hasar durumuna göre listeleyin.">
+<meta name="description" content="Piyasa ortalamasının altındaki ikinci el araç ilanlarını fiyat, yıl, KM ve hasar durumuna göre listeleyin. Ucuz arabaları tek bakışta bulun.">
+<link rel="canonical" href="https://kelepirarabalar.com/">
+<meta name="theme-color" content="#0b2b23">
+<meta name="robots" content="index, follow">
+
+<!-- Site simgeleri -->
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+
+<!-- Paylaşım önizlemesi (WhatsApp, Facebook, X, Telegram, iMessage…) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Kelepir Arabalar">
+<meta property="og:locale" content="tr_TR">
+<meta property="og:url" content="https://kelepirarabalar.com/">
+<meta property="og:title" content="Kelepir Arabalar – Piyasadan ucuz ikinci el araçlar">
+<meta property="og:description" content="Piyasa ortalamasının altındaki ikinci el araç ilanları. Fiyat, yıl, KM ve hasar durumuna göre filtreleyin, en ucuzları ilk görün.">
+<meta property="og:image" content="https://kelepirarabalar.com/og-image.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Kelepir Arabalar – radar simgesi ve site adı">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Kelepir Arabalar – Piyasadan ucuz ikinci el araçlar">
+<meta name="twitter:description" content="Piyasa ortalamasının altındaki ikinci el araç ilanları. En ucuzları ilk görün.">
+<meta name="twitter:image" content="https://kelepirarabalar.com/og-image.jpg">
 <style>
 :root{
   --bg:#f5f4f0; --card:#ffffff; --ink:#1d1d1b; --muted:#6b6a64; --line:#e4e2da;
@@ -101,6 +128,17 @@ tr.detail td{background:var(--bg);padding:14px 18px}
 @keyframes pulse{70%{box-shadow:0 0 0 8px rgba(82,224,142,0)}100%{box-shadow:0 0 0 0 rgba(82,224,142,0)}}
 @media (prefers-reduced-motion:reduce){.radar .sweep,.radar i,.live,.hero h2 .dots::after{animation:none}.hero h2 .dots::after{content:"..."}.radar i{opacity:.8}}
 @media (max-width:600px){.hero{padding:14px;gap:14px}.radar{width:70px;height:70px;border-width:4px}.hero h2{font-size:17px}}
+.fav{background:none;border:0;cursor:pointer;font-size:21px;line-height:1;color:var(--muted);padding:4px 6px;border-radius:8px;transition:transform .12s,color .12s}
+.fav:hover{transform:scale(1.18);color:#e0245e}
+.fav.on{color:#e0245e}
+.fav:focus-visible{outline:2px solid var(--accent)}
+th.favth,td.favtd{width:44px;padding-left:10px;padding-right:0;cursor:default}
+.c-top .fav{flex:none;margin:-6px -2px 0 -8px;font-size:23px}
+.range .fav-btn small{margin-left:5px}
+.range .sharebtn{margin-left:auto}
+.linkbtn{background:none;border:0;padding:0;color:var(--accent);font:inherit;font-weight:600;cursor:pointer;text-decoration:underline}
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:#1d1d1b;color:#fff;padding:10px 18px;border-radius:99px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:50}
+#toast.show{opacity:1;transform:translate(-50%,0)}
 .mbar{display:none}
 .cards{display:none}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 14px 10px;margin-bottom:10px;cursor:pointer}
@@ -109,8 +147,7 @@ tr.detail td{background:var(--bg);padding:14px 18px}
 .c-name a{color:var(--ink);text-decoration:none}
 .c-name a:hover{color:var(--accent);text-decoration:underline}
 .c-price{font-weight:800;font-size:17px;white-space:nowrap;letter-spacing:-.01em}
-.c-specs{display:flex;flex-wrap:wrap;gap:4px 0;margin:8px 0 10px;color:var(--muted);font-size:13px}
-.c-specs span+span::before{content:"·";margin:0 7px;opacity:.6}
+.c-specs{display:flex;flex-wrap:wrap;gap:3px 14px;margin:8px 0 10px;color:var(--muted);font-size:13px}
 .c-bottom{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .c-ucuz .ucuz{font-weight:700;color:var(--accent)}
 .c-badges{display:flex;flex-wrap:wrap;gap:4px 0;justify-content:flex-end}
@@ -129,11 +166,12 @@ tr.detail td{background:var(--bg);padding:14px 18px}
   .cards{display:block}
   .tablewrap{background:none;border:0;overflow:visible;border-radius:0}
   .mbar:not([hidden]){display:flex;gap:8px;margin-bottom:10px}
-  .mbar .btn{flex:none;padding:9px 14px}
+  .mbar .btn{flex:none;padding:9px 12px}
   .mbar select{flex:1;min-width:0;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card)}
   #filters:not(.open){display:none}
   .range{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}
   .range .btn{flex:none;white-space:nowrap}
+  .range .sharebtn{display:none}
   .more{padding:6px 0 14px}
 }
 @media (max-width:600px){
@@ -188,6 +226,7 @@ select#src{padding:8px 10px;border:1px solid var(--line);border-radius:8px;backg
   </section>
   <div class="mbar" id="mbar" hidden>
     <button class="btn ghost" id="ftoggle" type="button">Filtrele</button>
+    <button class="btn ghost sharebtn" type="button" id="share2" aria-label="Bağlantıyı paylaş">Paylaş</button>
     <select id="msort" aria-label="Sırala">
       <option value="ucuz:-1">Sırala: En ucuz (% Ucuz)</option>
       <option value="fiyat:1">Fiyat: Düşükten yükseğe</option>
@@ -199,11 +238,16 @@ select#src{padding:8px 10px;border:1px solid var(--line);border-radius:8px;backg
   </div>
   <div class="range" id="range" hidden>
     <button class="btn ghost" data-r="all">Tümü<small></small></button>
-    <button class="btn ghost" data-r="today">Bugünün ilanları<small></small></button>
-    <button class="btn ghost" data-r="week">Bu haftanın ilanları<small></small></button>
+    <button class="btn ghost" data-r="today">Bugün<small></small></button>
+    <button class="btn ghost" data-r="d2">Son 2 gün<small></small></button>
+    <button class="btn ghost" data-r="d3">Son 3 gün<small></small></button>
+    <button class="btn ghost" data-r="week">Bu hafta<small></small></button>
+    <button class="btn ghost fav-btn" data-r="fav">♥ Favoriler<small></small></button>
+    <button class="btn ghost sharebtn" type="button" id="share1" title="Bu süzgeçlerle sayfa bağlantısını paylaş">Bağlantıyı paylaş</button>
   </div>
   <div class="tablewrap" id="tablewrap"></div>
   <div class="note" id="note"></div>
+<div id="toast" role="status" aria-live="polite"></div>
 </main>
 <footer class="foot">Bu sitede ilan yayınlanmaz; her ilan, ilgili ilan sitesindeki sayfasına bağlanır. Listelenen fiyat ve bilgiler bilgilendirme amaçlıdır, satın almadan önce ilan sayfasından doğrulayın. Bu site, ilan sitelerinden herhangi biriyle bağlantılı değildir.</footer>
 
@@ -236,9 +280,14 @@ function prettyCar(markaRaw, modelRaw){
 function dayStart(d){ const x = new Date(d); x.setHours(0,0,0,0); return x; }
 function inRange(r, mode){
   if (mode === "all") return true;
+  if (mode === "fav") return isFav(r);
   if (!r.tarih) return false;
   const today = dayStart(new Date()), d = dayStart(r.tarih);
   if (mode === "today") return +d === +today;
+  if (mode === "d2" || mode === "d3") {  // bugün dahil, geriye doğru 2 / 3 gün
+    const from = new Date(today); from.setDate(today.getDate() - (mode === "d2" ? 1 : 2));
+    return d >= from && d <= today;
+  }
   const monday = new Date(today); monday.setDate(today.getDate() - ((today.getDay() + 6) % 7));
   return d >= monday && d <= today;
 }
@@ -342,7 +391,51 @@ function detailHtml(r){
 
 const SITE_ADI = "Kelepir Arabalar";
 const num = v => (v === null || v === undefined || v === "" || isNaN(Number(v))) ? null : Number(v);
-const state = { rows: [], range: "all", sort: { key: "ucuz", dir: -1 }, limit: 100, open: new Set(), updated: null };
+const state = { rows: [], range: "all", sort: { key: "ucuz", dir: -1 }, limit: 100, open: new Set(), updated: null, hashApplied: false };
+/* ---------- Favoriler (bu cihazın tarayıcısında saklanır) ---------- */
+const FAV_KEY = "kelepir_favoriler";
+let favMem = [];
+function loadFavs(){
+  try { const v = JSON.parse(localStorage.getItem(FAV_KEY) || "[]"); return new Set(Array.isArray(v) ? v : []); }
+  catch (e) { return new Set(favMem); }
+}
+function saveFavs(){ favMem = [...state.favs]; try { localStorage.setItem(FAV_KEY, JSON.stringify(favMem)); } catch (e) {} }
+state.favs = loadFavs();
+const isFav = r => !!r.url && state.favs.has(r.url);
+function toggleFav(url){ if (!url) return; state.favs.has(url) ? state.favs.delete(url) : state.favs.add(url); saveFavs(); render(); }
+const favBtn = r => `<button class="fav${isFav(r) ? " on" : ""}" type="button" data-url="${esc(r.url)}" aria-pressed="${isFav(r)}" aria-label="${isFav(r) ? "Favorilerden çıkar" : "Favorilere ekle"}" title="${isFav(r) ? "Favorilerden çıkar" : "Favorilere ekle"}">${isFav(r) ? "♥" : "♡"}</button>`;
+
+/* ---------- Paylaşılabilir bağlantı (süzgeçler adres çubuğuna yazılır) ---------- */
+const HF = { q: "f-q", marka: "f-brand", il: "f-il", yil: "f-yilmin", fiyat: "f-fmax", km: "f-kmmax", ucuz: "f-umin" };
+const HC = { agir: "c-agir", deg: "c-deg", temiz: "c-temiz" };
+const SORT_KEYS = ["ucuz", "fiyat", "yil", "km", "tarih", "arac", "konum", "hasar"];
+function hashString(){
+  const p = new URLSearchParams();
+  for (const [k, id] of Object.entries(HF)) { const v = $(id).value.trim(); if (v) p.set(k, v); }
+  for (const [k, id] of Object.entries(HC)) if ($(id).checked) p.set(k, "1");
+  if (["today", "d2", "d3", "week"].includes(state.range)) p.set("r", state.range);  // favoriler kişiseldir, bağlantıya yazılmaz
+  const s = state.sort.key + ":" + state.sort.dir; if (s !== "ucuz:-1") p.set("s", s);
+  return p.toString();
+}
+function shareUrl(){ const h = hashString(); return location.href.split("#")[0] + (h ? "#" + h : ""); }
+function writeHash(){ try { const h = hashString(); history.replaceState(null, "", location.pathname + location.search + (h ? "#" + h : "")); } catch (e) {} }
+function applyHash(){
+  const p = new URLSearchParams(location.hash.replace(/^#/, ""));
+  for (const [k, id] of Object.entries(HF)) { const el = $(id); el.value = p.get(k) || ""; }
+  for (const [k, id] of Object.entries(HC)) $(id).checked = p.get(k) === "1";
+  const r = p.get("r"); state.range = ["today", "d2", "d3", "week"].includes(r) ? r : (state.range === "fav" ? "fav" : "all");
+  const s = (p.get("s") || "").split(":");
+  state.sort = SORT_KEYS.includes(s[0]) && (s[1] === "1" || s[1] === "-1") ? { key: s[0], dir: +s[1] } : { key: "ucuz", dir: -1 };
+}
+function toast(msg){ const t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("show"), 2200); }
+async function shareLink(){
+  const url = shareUrl();
+  try { if (navigator.share && matchMedia("(max-width:700px)").matches) { await navigator.share({ title: document.title, url }); return; } }
+  catch (e) { if (e && e.name === "AbortError") return; }
+  try { await navigator.clipboard.writeText(url); toast("Bağlantı kopyalandı"); }
+  catch (e) { window.prompt("Bağlantıyı kopyalayın:", url); }
+}
+
 
 function toRow(x){
   const car = prettyCar(x.marka, x.model);
@@ -377,6 +470,7 @@ function refreshAll(){
   const all = state.rows;
   fillSelect($("f-brand"), [...new Set(all.map(r => r.brand))].sort((a, b) => a.localeCompare(b, "tr")), "Hepsi");
   fillSelect($("f-il"), [...new Set(all.map(r => r.il).filter(Boolean))].sort((a, b) => a.localeCompare(b, "tr")), "Hepsi");
+  if (!state.hashApplied) { state.hashApplied = true; applyHash(); }
   render();
 }
 function render(){
@@ -384,7 +478,7 @@ function render(){
   if (!all.length) { $("range").hidden = true; $("tablewrap").innerHTML = '<div class="empty"><h2>Henüz ilan yok</h2>Yakında burada olacak.</div>'; return; }
   const rows = sorted(filtered(all));
   $("range").hidden = false;
-  document.querySelectorAll("#range .btn").forEach(b => {
+  document.querySelectorAll("#range .btn[data-r]").forEach(b => {
     b.classList.toggle("active", b.dataset.r === state.range);
     b.querySelector("small").textContent = all.filter(r => inRange(r, b.dataset.r)).length;
   });
@@ -399,7 +493,7 @@ function render(){
     [best != null ? "%" + best : "—", "en yüksek “% ucuz”"]
   ].map(([b, s]) => `<div class="stat"><b>${esc(b)}</b><span>${s}</span></div>`).join("");
   const cols = [["arac","İlan"],["yil","Yıl","num"],["km","KM","num"],["fiyat","Fiyat","num"],["ucuz","% Ucuz","num"],["konum","Konum"],["tarih","Tarih"],["hasar","Durum"]];
-  let h = "<table><thead><tr>" + cols.map(([k, t, c]) =>
+  let h = '<table><thead><tr><th class="favth"></th>' + cols.map(([k, t, c]) =>
     `<th data-k="${k}" class="${c || ""} ${state.sort.key === k ? "on" : ""}">${t}<span class="arr">${state.sort.key === k ? (state.sort.dir > 0 ? "▲" : "▼") : "↕"}</span></th>`).join("") + "</tr></thead><tbody>";
   let cards = "";
   const shown = rows.slice(0, state.limit);
@@ -408,6 +502,7 @@ function render(){
     const open = state.open.has(key);
     const ucuzHtml = r.ucuz != null ? `<span class="ucuz">%${r.ucuz}<span class="bar"><i style="width:${Math.max(0, Math.min(100, r.ucuz * 3))}%"></i></span></span>` : "—";
     h += `<tr class="row" data-key="${esc(key)}">
+      <td class="favtd">${favBtn(r)}</td>
       <td class="title"><a href="${esc(r.url)}" target="_blank" rel="noopener nofollow" onclick="event.stopPropagation()">${esc(r.brand)} ${esc(r.model)}</a>${r.auto ? ' <span class="badge b-gray">Otomatik</span>' : ""}</td>
       <td class="num">${r.yil ?? "—"}</td>
       <td class="num">${r.km != null ? nf.format(r.km) : "—"}</td>
@@ -416,9 +511,10 @@ function render(){
       <td>${esc(r.il)}${r.ilce ? `<small style="color:var(--muted)"> / ${esc(r.ilce)}</small>` : ""}</td>
       <td>${fmtDate(r.tarih)}</td>
       <td>${statusBadges(r)}</td></tr>`;
-    if (open) h += `<tr class="detail"><td colspan="8">${detailHtml(r)}</td></tr>`;
+    if (open) h += `<tr class="detail"><td colspan="9">${detailHtml(r)}</td></tr>`;
     cards += `<article class="card" data-key="${esc(key)}">
       <div class="c-top">
+        ${favBtn(r)}
         <div class="c-name"><a href="${esc(r.url)}" target="_blank" rel="noopener nofollow">${esc(r.brand)} ${esc(r.model)}</a>${r.auto ? ' <span class="badge b-gray">Otomatik</span>' : ""}</div>
         <div class="c-price">${fmtTL(r.fiyat)}</div>
       </div>
@@ -430,15 +526,20 @@ function render(){
   });
   h += "</tbody></table>";
   h = `<div class="tbl">${h}</div><div class="cards">${cards}</div>`;
-  if (!shown.length) h = `<div class="empty"><h2>Sonuç yok</h2>${state.range !== "all" ? "Bu zaman aralığında ilan yok. En yeni ilan tarihi: " + fmtDate(all.reduce((m, r) => r.tarih && (!m || r.tarih > m) ? r.tarih : m, null)) + "." : "Filtrelere uyan ilan bulunamadı."}</div>`;
+  if (!shown.length) h = state.range === "fav" ? `<div class="empty"><h2>Henüz favori ilanınız yok</h2>İlanların yanındaki ♡ simgesine dokunarak beğendiğiniz ilanları buraya kaydedebilirsiniz.</div>` : `<div class="empty"><h2>Sonuç yok</h2>${state.range !== "all" ? "Bu zaman aralığında ilan yok. En yeni ilan tarihi: " + fmtDate(all.reduce((m, r) => r.tarih && (!m || r.tarih > m) ? r.tarih : m, null)) + "." : "Filtrelere uyan ilan bulunamadı."}</div>`;
   if (rows.length > shown.length) h += `<div class="more"><button class="btn ghost" id="more">Daha fazla göster (${rows.length - shown.length} ilan daha)</button></div>`;
   $("mbar").hidden = false;
   const sv = state.sort.key + ":" + state.sort.dir;
   if ([...$("msort").options].some(o => o.value === sv)) $("msort").value = sv;
   $("tablewrap").innerHTML = h;
+  writeHash();
   $("note").textContent = "İlanlar varsayılan olarak en ucuzdan (% Ucuz en yüksek) sıralıdır. Bir ilana tıklarsanız araç üzerinde hasar şeması açılır; ilan adına tıklarsanız ilan sayfasına gidersiniz.";
+  if (state.range === "fav") {
+    const missing = state.favs.size - all.filter(isFav).length;
+    if (missing > 0) $("note").innerHTML = `${missing} favori ilanınız artık listede yok (satılmış ya da kaldırılmış olabilir). <button class="linkbtn" id="favclean" type="button">Listeden kaldır</button>`;
+  }
 }
-$("range").onclick = e => { const b = e.target.closest(".btn"); if (b) { state.range = b.dataset.r; state.limit = 100; render(); } };
+$("range").onclick = e => { const b = e.target.closest(".btn"); if (b && b.dataset.r) { state.range = b.dataset.r; state.limit = 100; render(); } };
 ["f-q","f-yilmin","f-fmax","f-kmmax","f-umin"].forEach(id => $(id).oninput = () => { state.limit = 100; render(); });
 ["f-brand","f-il","c-agir","c-deg","c-temiz"].forEach(id => $(id).onchange = () => { state.limit = 100; render(); });
 $("f-reset").onclick = () => {
@@ -446,8 +547,10 @@ $("f-reset").onclick = () => {
   ["c-agir","c-deg","c-temiz"].forEach(id => $(id).checked = false); render();
 };
 $("tablewrap").addEventListener("click", e => {
+  const fb = e.target.closest(".fav");
+  if (fb) { toggleFav(fb.dataset.url); return; }
   const th = e.target.closest("th");
-  if (th) { const k = th.dataset.k; state.sort = { key: k, dir: state.sort.key === k ? -state.sort.dir : (["arac","konum"].includes(k) ? 1 : -1) }; render(); return; }
+  if (th) { if (!th.dataset.k) return; const k = th.dataset.k; state.sort = { key: k, dir: state.sort.key === k ? -state.sort.dir : (["arac","konum"].includes(k) ? 1 : -1) }; render(); return; }
   if (e.target.id === "more") { state.limit += 200; render(); return; }
   if (e.target.closest("a")) return;
   const card = e.target.closest(".card");
@@ -457,6 +560,13 @@ $("tablewrap").addEventListener("click", e => {
 });
 $("msort").onchange = e => { const [k, d] = e.target.value.split(":"); state.sort = { key: k, dir: +d }; state.limit = 100; render(); };
 $("ftoggle").onclick = () => { const f = $("filters"); const o = f.classList.toggle("open"); $("ftoggle").textContent = o ? "Filtreleri gizle" : "Filtrele"; };
+$("share1").onclick = $("share2").onclick = shareLink;
+$("note").addEventListener("click", e => {
+  if (e.target.id !== "favclean") return;
+  const live = new Set(state.rows.map(r => r.url));
+  state.favs = new Set([...state.favs].filter(u => live.has(u))); saveFavs(); render();
+});
+addEventListener("hashchange", () => { if (state.rows.length) { applyHash(); render(); } });
 document.title = SITE_ADI + " – Piyasadan ucuz ikinci el araçlar";
 $("site-adi").textContent = SITE_ADI;
 loadData();
