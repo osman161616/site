@@ -132,18 +132,34 @@ tr.detail td{background:var(--bg);padding:14px 18px}
 .fav:hover{transform:scale(1.18);color:#e0245e}
 .fav.on{color:#e0245e}
 .fav:focus-visible{outline:2px solid var(--accent)}
-th.favth,td.favtd{width:44px;padding-left:10px;padding-right:0;cursor:default}
+th.favth,td.favtd{width:78px;padding-left:10px;padding-right:0;cursor:default}
 .c-top .fav{flex:none;margin:-6px -2px 0 -8px;font-size:23px}
 .range .fav-btn small{margin-left:5px}
 .range .sharebtn{margin-left:auto}
 .linkbtn{background:none;border:0;padding:0;color:var(--accent);font:inherit;font-weight:600;cursor:pointer;text-decoration:underline}
 #toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:#1d1d1b;color:#fff;padding:10px 18px;border-radius:99px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:50}
 #toast.show{opacity:1;transform:translate(-50%,0)}
+.sharecar{display:inline-flex;align-items:center;gap:6px;background:none;border:0;cursor:pointer;color:var(--muted);padding:5px 6px;border-radius:8px;font:inherit;font-size:13px;vertical-align:middle;transition:color .12s,background .12s}
+.sharecar:hover{color:var(--accent);background:var(--accent-soft)}
+.sharecar:focus-visible{outline:2px solid var(--accent)}
+td.favtd{white-space:nowrap}
+.c-more{display:flex;justify-content:space-between;align-items:center;text-align:left}
+.c-more .sharecar{margin:-4px -6px -4px 0}
+.c-actions{margin-top:8px;display:flex;justify-content:center}
+.c-actions .sharecar{border:1px solid var(--line);padding:8px 16px;border-radius:99px;font-weight:600;color:var(--accent)}
+.focus{max-width:900px;margin:0 auto 18px}
+.focus-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:8px;font-weight:700;color:var(--accent)}
+.focus-head .btn{padding:7px 14px;font-size:14px}
+.focus-card{cursor:default;border:2px solid var(--accent);box-shadow:0 6px 24px rgba(15,107,92,.14)}
+.focus-card .c-detail{border-top:1px solid var(--line)}
+.focus-miss{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;background:var(--warn-soft);border:1px solid var(--warn);border-radius:14px;padding:14px 16px;color:var(--ink)}
+.focus-miss .btn{padding:8px 14px}
+#focus[hidden]{display:none}
 .mbar{display:none}
 .cards{display:none}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 14px 10px;margin-bottom:10px;cursor:pointer}
 .c-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
-.c-name{font-weight:700;font-size:15.5px;line-height:1.3;min-width:0}
+.c-name{font-weight:700;font-size:15.5px;line-height:1.3;min-width:0;flex:1}
 .c-name a{color:var(--ink);text-decoration:none}
 .c-name a:hover{color:var(--accent);text-decoration:underline}
 .c-price{font-weight:800;font-size:17px;white-space:nowrap;letter-spacing:-.01em}
@@ -208,6 +224,7 @@ select#src{padding:8px 10px;border:1px solid var(--line);border-radius:8px;backg
     <p><span class="live"></span><span id="hero-sub">Taranıyor…</span></p>
   </div>
 </section>
+  <div class="focus" id="focus" hidden></div>
   <section class="stats" id="stats" hidden></section>
   <section class="filters" id="filters" hidden>
     <div><label>Ara (marka, model, il)</label><input type="text" id="f-q" placeholder="örn. passat, İstanbul"></div>
@@ -391,7 +408,7 @@ function detailHtml(r){
 
 const SITE_ADI = "Kelepir Arabalar";
 const num = v => (v === null || v === undefined || v === "" || isNaN(Number(v))) ? null : Number(v);
-const state = { rows: [], range: "all", sort: { key: "ucuz", dir: -1 }, limit: 100, open: new Set(), updated: null, hashApplied: false };
+const state = { rows: [], range: "all", sort: { key: "ucuz", dir: -1 }, limit: 100, open: new Set(), updated: null, hashApplied: false, focusId: null };
 /* ---------- Favoriler (bu cihazın tarayıcısında saklanır) ---------- */
 const FAV_KEY = "kelepir_favoriler";
 let favMem = [];
@@ -409,20 +426,22 @@ const favBtn = r => `<button class="fav${isFav(r) ? " on" : ""}" type="button" d
 const HF = { q: "f-q", marka: "f-brand", il: "f-il", yil: "f-yilmin", fiyat: "f-fmax", km: "f-kmmax", ucuz: "f-umin" };
 const HC = { agir: "c-agir", deg: "c-deg", temiz: "c-temiz" };
 const SORT_KEYS = ["ucuz", "fiyat", "yil", "km", "tarih", "arac", "konum", "hasar"];
-function hashString(){
+function hashString(withFocus){
   const p = new URLSearchParams();
   for (const [k, id] of Object.entries(HF)) { const v = $(id).value.trim(); if (v) p.set(k, v); }
   for (const [k, id] of Object.entries(HC)) if ($(id).checked) p.set(k, "1");
   if (["today", "d2", "d3", "week"].includes(state.range)) p.set("r", state.range);  // favoriler kişiseldir, bağlantıya yazılmaz
   const s = state.sort.key + ":" + state.sort.dir; if (s !== "ucuz:-1") p.set("s", s);
+  if (withFocus && state.focusId) p.set("ilan", state.focusId);
   return p.toString();
 }
 function shareUrl(){ const h = hashString(); return location.href.split("#")[0] + (h ? "#" + h : ""); }
-function writeHash(){ try { const h = hashString(); history.replaceState(null, "", location.pathname + location.search + (h ? "#" + h : "")); } catch (e) {} }
+function writeHash(){ try { const h = hashString(true); history.replaceState(null, "", location.pathname + location.search + (h ? "#" + h : "")); } catch (e) {} }
 function applyHash(){
   const p = new URLSearchParams(location.hash.replace(/^#/, ""));
   for (const [k, id] of Object.entries(HF)) { const el = $(id); el.value = p.get(k) || ""; }
   for (const [k, id] of Object.entries(HC)) $(id).checked = p.get(k) === "1";
+  const fid = p.get("ilan"); state.focusId = fid && /^[\w-]{1,40}$/.test(fid) ? fid : null;
   const r = p.get("r"); state.range = ["today", "d2", "d3", "week"].includes(r) ? r : (state.range === "fav" ? "fav" : "all");
   const s = (p.get("s") || "").split(":");
   state.sort = SORT_KEYS.includes(s[0]) && (s[1] === "1" || s[1] === "-1") ? { key: s[0], dir: +s[1] } : { key: "ucuz", dir: -1 };
@@ -473,9 +492,57 @@ function refreshAll(){
   if (!state.hashApplied) { state.hashApplied = true; applyHash(); }
   render();
 }
+/* ---------- İlan kartı, ilan paylaşımı ---------- */
+function ilanId(r){
+  const u = String(r.url || "");
+  const m = u.match(/(\d{6,})\/detay/) || u.match(/(\d{6,})/);
+  if (m) return m[1];
+  let h = 0; for (let i = 0; i < u.length; i++) h = (h * 31 + u.charCodeAt(i)) | 0;
+  return "x" + (h >>> 0).toString(36);
+}
+const SHARE_SVG = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v13"/></svg>';
+const shareBtn = (r, label) => `<button class="sharecar" type="button" data-id="${esc(ilanId(r))}" aria-label="Bu ilanı paylaş" title="Bu ilanı paylaş">${SHARE_SVG}${label ? "<span>" + label + "</span>" : ""}</button>`;
+function ucuzOf(r){ return r.ucuz != null ? `<span class="ucuz">%${r.ucuz}<span class="bar"><i style="width:${Math.max(0, Math.min(100, r.ucuz * 3))}%"></i></span></span>` : "—"; }
+function cardHtml(r, open, focus){
+  return `<article class="card${focus ? " focus-card" : ""}" data-key="${esc(r.url || ilanId(r))}">
+      <div class="c-top">
+        ${favBtn(r)}
+        <div class="c-name"><a href="${esc(r.url)}" target="_blank" rel="noopener nofollow">${esc(r.brand)} ${esc(r.model)}</a>${r.auto ? ' <span class="badge b-gray">Otomatik</span>' : ""}</div>
+        <div class="c-price">${fmtTL(r.fiyat)}</div>
+      </div>
+      <div class="c-specs"><span>${r.yil ?? "—"}</span><span>${r.km != null ? nf.format(r.km) + " km" : "—"}</span><span>${esc(r.il)}${r.ilce ? " / " + esc(r.ilce) : ""}</span><span>${fmtDate(r.tarih)}</span></div>
+      <div class="c-bottom"><div class="c-ucuz">${ucuzOf(r)}</div><div class="c-badges">${statusBadges(r)}</div></div>
+      ${focus ? "" : `<div class="c-more"><span>${open ? "Hasar şemasını gizle ▴" : "Hasar şemasını göster ▾"}</span>${shareBtn(r, "Paylaş")}</div>`}
+      ${open || focus ? `<div class="c-detail">${detailHtml(r)}</div>` : ""}
+      ${focus ? `<div class="c-actions">${shareBtn(r, "Bu ilanı paylaş")}</div>` : ""}
+    </article>`;
+}
+function renderFocus(){
+  const box = $("focus");
+  if (!state.focusId) { box.hidden = true; box.innerHTML = ""; return; }
+  const r = state.rows.find(x => ilanId(x) === state.focusId);
+  box.hidden = false;
+  box.innerHTML = r
+    ? `<div class="focus-head"><span>Sizinle paylaşılan ilan</span><button class="btn" id="focus-all" type="button">Tüm ilanları gör ↓</button></div>${cardHtml(r, true, true)}`
+    : `<div class="focus-miss"><div><b>Paylaşılan ilan artık listede yok.</b><br>Satılmış ya da kaldırılmış olabilir. Güncel kelepir ilanlara göz atın.</div><button class="btn" id="focus-all" type="button">Tüm ilanları gör ↓</button></div>`;
+}
+async function shareCar(id){
+  const r = state.rows.find(x => ilanId(x) === id); if (!r) return;
+  const baslik = `${r.yil ? r.yil + " " : ""}${r.brand} ${r.model}`;
+  const satir = `${baslik} – ${fmtTL(r.fiyat)}${r.ucuz != null ? " (%" + r.ucuz + " ucuz)" : ""}`;
+  const url = location.href.split("#")[0] + "#ilan=" + encodeURIComponent(id);
+  try { if (navigator.share && matchMedia("(max-width:700px)").matches) { await navigator.share({ title: baslik, text: satir, url }); return; } }
+  catch (e) { if (e && e.name === "AbortError") return; }
+  const metin = satir + "\n" + url;
+  try { await navigator.clipboard.writeText(metin); toast("İlan bağlantısı kopyalandı"); }
+  catch (e) { window.prompt("Bağlantıyı kopyalayın:", metin); }
+}
+function closeFocus(){ state.focusId = null; writeHash(); renderFocus(); }
+
 function render(){
   const all = state.rows;
   if (!all.length) { $("range").hidden = true; $("tablewrap").innerHTML = '<div class="empty"><h2>Henüz ilan yok</h2>Yakında burada olacak.</div>'; return; }
+  renderFocus();
   const rows = sorted(filtered(all));
   $("range").hidden = false;
   document.querySelectorAll("#range .btn[data-r]").forEach(b => {
@@ -502,7 +569,7 @@ function render(){
     const open = state.open.has(key);
     const ucuzHtml = r.ucuz != null ? `<span class="ucuz">%${r.ucuz}<span class="bar"><i style="width:${Math.max(0, Math.min(100, r.ucuz * 3))}%"></i></span></span>` : "—";
     h += `<tr class="row" data-key="${esc(key)}">
-      <td class="favtd">${favBtn(r)}</td>
+      <td class="favtd">${favBtn(r)}${shareBtn(r)}</td>
       <td class="title"><a href="${esc(r.url)}" target="_blank" rel="noopener nofollow" onclick="event.stopPropagation()">${esc(r.brand)} ${esc(r.model)}</a>${r.auto ? ' <span class="badge b-gray">Otomatik</span>' : ""}</td>
       <td class="num">${r.yil ?? "—"}</td>
       <td class="num">${r.km != null ? nf.format(r.km) : "—"}</td>
@@ -512,17 +579,7 @@ function render(){
       <td>${fmtDate(r.tarih)}</td>
       <td>${statusBadges(r)}</td></tr>`;
     if (open) h += `<tr class="detail"><td colspan="9">${detailHtml(r)}</td></tr>`;
-    cards += `<article class="card" data-key="${esc(key)}">
-      <div class="c-top">
-        ${favBtn(r)}
-        <div class="c-name"><a href="${esc(r.url)}" target="_blank" rel="noopener nofollow">${esc(r.brand)} ${esc(r.model)}</a>${r.auto ? ' <span class="badge b-gray">Otomatik</span>' : ""}</div>
-        <div class="c-price">${fmtTL(r.fiyat)}</div>
-      </div>
-      <div class="c-specs"><span>${r.yil ?? "—"}</span><span>${r.km != null ? nf.format(r.km) + " km" : "—"}</span><span>${esc(r.il)}${r.ilce ? " / " + esc(r.ilce) : ""}</span><span>${fmtDate(r.tarih)}</span></div>
-      <div class="c-bottom"><div class="c-ucuz">${ucuzHtml}</div><div class="c-badges">${statusBadges(r)}</div></div>
-      <div class="c-more">${open ? "Hasar şemasını gizle ▴" : "Hasar şemasını göster ▾"}</div>
-      ${open ? `<div class="c-detail">${detailHtml(r)}</div>` : ""}
-    </article>`;
+    cards += cardHtml(r, open, false);
   });
   h += "</tbody></table>";
   h = `<div class="tbl">${h}</div><div class="cards">${cards}</div>`;
@@ -547,6 +604,8 @@ $("f-reset").onclick = () => {
   ["c-agir","c-deg","c-temiz"].forEach(id => $(id).checked = false); render();
 };
 $("tablewrap").addEventListener("click", e => {
+  const sb = e.target.closest(".sharecar");
+  if (sb) { shareCar(sb.dataset.id); return; }
   const fb = e.target.closest(".fav");
   if (fb) { toggleFav(fb.dataset.url); return; }
   const th = e.target.closest("th");
@@ -567,6 +626,11 @@ $("note").addEventListener("click", e => {
   state.favs = new Set([...state.favs].filter(u => live.has(u))); saveFavs(); render();
 });
 addEventListener("hashchange", () => { if (state.rows.length) { applyHash(); render(); } });
+$("focus").addEventListener("click", e => {
+  if (e.target.closest("#focus-all")) { closeFocus(); $("stats").scrollIntoView({ behavior: "smooth", block: "start" }); return; }
+  const sb = e.target.closest(".sharecar"); if (sb) { shareCar(sb.dataset.id); return; }
+  const fb = e.target.closest(".fav"); if (fb) toggleFav(fb.dataset.url);
+});
 document.title = SITE_ADI + " – Piyasadan ucuz ikinci el araçlar";
 $("site-adi").textContent = SITE_ADI;
 loadData();
