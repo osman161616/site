@@ -255,11 +255,11 @@ select#src{padding:8px 10px;border:1px solid var(--line);border-radius:8px;backg
     </select>
   </div>
   <div class="range" id="range" hidden>
-    <button class="btn ghost" data-r="all">Tümü<small></small></button>
     <button class="btn ghost" data-r="today">Bugün<small></small></button>
     <button class="btn ghost" data-r="d2">Son 2 gün<small></small></button>
     <button class="btn ghost" data-r="d3">Son 3 gün<small></small></button>
     <button class="btn ghost" data-r="week">Bu hafta<small></small></button>
+    <button class="btn ghost" data-r="all">Tümü<small></small></button>
     <button class="btn ghost fav-btn" data-r="fav">♥ Favoriler<small></small></button>
     <button class="btn ghost sharebtn" type="button" id="share1" title="Bu süzgeçlerle sayfa bağlantısını paylaş">Bağlantıyı paylaş</button>
   </div>
@@ -412,7 +412,7 @@ function detailHtml(r){
 
 const SITE_ADI = "Kelepir Arabalar";
 const num = v => (v === null || v === undefined || v === "" || isNaN(Number(v))) ? null : Number(v);
-const state = { rows: [], range: "all", sort: { key: "ucuz", dir: -1 }, limit: 100, open: new Set(), updated: null, hashApplied: false, focusId: null };
+const state = { rows: [], range: "today", sort: { key: "ucuz", dir: -1 }, limit: 100, open: new Set(), updated: null, hashApplied: false, focusId: null };
 /* ---------- Favoriler (bu cihazın tarayıcısında saklanır) ---------- */
 const FAV_KEY = "kelepir_favoriler";
 let favMem = [];
@@ -434,7 +434,7 @@ function hashString(withFocus){
   const p = new URLSearchParams();
   for (const [k, id] of Object.entries(HF)) { const v = $(id).value.trim(); if (v) p.set(k, v); }
   for (const [k, id] of Object.entries(HC)) if ($(id).checked) p.set(k, "1");
-  if (["today", "d2", "d3", "week"].includes(state.range)) p.set("r", state.range);  // favoriler kişiseldir, bağlantıya yazılmaz
+  if (["d2", "d3", "week", "all"].includes(state.range)) p.set("r", state.range);  // varsayılan "bugün" ve kişisel favoriler bağlantıya yazılmaz
   const s = state.sort.key + ":" + state.sort.dir; if (s !== "ucuz:-1") p.set("s", s);
   if (withFocus && state.focusId) p.set("ilan", state.focusId);
   return p.toString();
@@ -446,7 +446,9 @@ function applyHash(){
   for (const [k, id] of Object.entries(HF)) { const el = $(id); el.value = p.get(k) || ""; }
   for (const [k, id] of Object.entries(HC)) $(id).checked = p.get(k) === "1";
   const fid = p.get("ilan"); state.focusId = fid && /^[\w-]{1,40}$/.test(fid) ? fid : null;
-  const r = p.get("r"); state.range = ["today", "d2", "d3", "week"].includes(r) ? r : (state.range === "fav" ? "fav" : "all");
+  const r = p.get("r"); state.range = ["today", "d2", "d3", "week", "all"].includes(r) ? r : (state.range === "fav" ? "fav" : "today");
+  // bugüne ait hiç ilan yoksa boş sayfa göstermek yerine tümünü aç (yalnızca ilk açılışta, bağlantıda aralık belirtilmemişse)
+  if (!r && state.range === "today" && !state.hashApplied2) { state.hashApplied2 = true; if (state.rows.length && !state.rows.some(x => inRange(x, "today"))) state.range = "all"; }
   const s = (p.get("s") || "").split(":");
   state.sort = SORT_KEYS.includes(s[0]) && (s[1] === "1" || s[1] === "-1") ? { key: s[0], dir: +s[1] } : { key: "ucuz", dir: -1 };
 }
